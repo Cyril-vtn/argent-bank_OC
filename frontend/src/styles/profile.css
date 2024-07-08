@@ -63,3 +63,14 @@
     width: 200px;
   }
 }
+
+.edit-input {
+  width: 15%;
+  padding: 10px;
+  margin-bottom: 1rem;
+  box-sizing: border-box;
+}
+
+.edit-input:focus {
+  outline: none;
+}
