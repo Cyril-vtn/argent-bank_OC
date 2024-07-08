@@ -1,5 +1,38 @@
+import { useEffect } from "react";
 import "../styles/profile.css";
+import { useDispatch, useSelector } from "react-redux";
+import { setUser } from "../features/user/userSlice";
 export const Profile = () => {
+  const user = useSelector((state) => state.user);
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    if (!user.token) {
+      return;
+    }
+
+    fetch("http://localhost:3001/api/v1/user/profile", {
+      method: "POST",
+      headers: { Authorization: `Bearer ${user.token}` },
+    })
+      .then((response) => {
+        if (response.ok) {
+          return response.json();
+        }
+        throw new Error("Network response was not ok.");
+      })
+      .then((data) => {
+        dispatch(
+          setUser({
+            userInfo: data.body,
+            token: user.token,
+          })
+        );
+      })
+      .catch((error) => {
+        console.error("There was a problem with your fetch operation:", error);
+      });
+  }, [user.token, dispatch]);
   return (
     <main className="main bg-dark">
       <div className="header">
