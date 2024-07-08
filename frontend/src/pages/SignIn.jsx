@@ -2,9 +2,13 @@ import "../styles/signIn.css"; // Adjust the path as necessary
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faUserCircle } from "@fortawesome/free-solid-svg-icons";
 import { useNavigate } from "react-router-dom";
+import { useDispatch } from "react-redux";
+import { setUser } from "../features/user/userSlice";
 
 export const SignIn = () => {
   const navigate = useNavigate();
+  const dispatch = useDispatch();
+
   const handleSubmit = async (e) => {
     const form = e.target;
 
@@ -17,7 +21,6 @@ export const SignIn = () => {
       password: form.password.value,
     };
     e.preventDefault();
-    console.log("formData:", formData);
     await fetch("http://localhost:3001/api/v1/user/login", {
       method: "POST",
       headers: {
@@ -29,11 +32,15 @@ export const SignIn = () => {
         if (response.ok) {
           return response.json();
         }
-        console.log(response);
         throw new Error("Network response was not ok.");
       })
       .then((data) => {
-        localStorage.setItem("token", data.token);
+        dispatch(
+          setUser({
+            userInfo: null,
+            token: data.body.token,
+          })
+        );
         navigate("/profile");
       })
       .catch((error) => {
