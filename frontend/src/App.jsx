@@ -9,6 +9,8 @@ import Home from "./pages/Home";
 import { SignIn } from "./pages/SignIn";
 import { Footer } from "./components/Footer";
 import { Navbar } from "./components/Navbar";
+import ProtectedRoute from "./components/ProtectedRoute";
+import { Profile } from "./pages/Profile";
 
 const Layout = () => (
   <>
@@ -26,6 +28,14 @@ const App = () => {
           <Route index element={<Home />} />
           <Route path="sign-in" element={<SignIn />} />
         </Route>
+        <Route
+          path="profile"
+          element={
+            <ProtectedRoute>
+              <Profile />
+            </ProtectedRoute>
+          }
+        />
       </Routes>
     </Router>
   );
