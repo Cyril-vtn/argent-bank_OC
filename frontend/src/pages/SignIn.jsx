@@ -1,14 +1,51 @@
 import "../styles/signIn.css"; // Adjust the path as necessary
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faUserCircle } from "@fortawesome/free-solid-svg-icons";
+import { useNavigate } from "react-router-dom";
 
 export const SignIn = () => {
+  const navigate = useNavigate();
+  const handleSubmit = async (e) => {
+    const form = e.target;
+
+    if (form.username.value === "" || form.password.value === "") {
+      alert("Please fill in all fields");
+      return;
+    }
+    const formData = {
+      email: form.username.value,
+      password: form.password.value,
+    };
+    e.preventDefault();
+    console.log("formData:", formData);
+    await fetch("http://localhost:3001/api/v1/user/login", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(formData),
+    })
+      .then((response) => {
+        if (response.ok) {
+          return response.json();
+        }
+        console.log(response);
+        throw new Error("Network response was not ok.");
+      })
+      .then((data) => {
+        localStorage.setItem("token", data.token);
+        navigate("/profile");
+      })
+      .catch((error) => {
+        console.error("There was a problem with your fetch operation:", error);
+      });
+  };
   return (
     <main className="main bg-dark">
       <section className="sign-in-content">
         <FontAwesomeIcon icon={faUserCircle} className="sign-in-icon" />
         <h1>Sign In</h1>
-        <form>
+        <form onSubmit={handleSubmit}>
           <div className="input-wrapper">
             <label htmlFor="username">Username</label>
             <input type="text" id="username" />
@@ -21,12 +58,9 @@ export const SignIn = () => {
             <input type="checkbox" id="remember-me" />
             <label htmlFor="remember-me">Remember me</label>
           </div>
-          {/* PLACEHOLDER DUE TO STATIC SITE */}
-          <a href="./user.html" className="sign-in-button">
+          <button type="submit" className="sign-in-button">
             Sign In
-          </a>
-          {/* SHOULD BE THE BUTTON BELOW */}
-          {/* <button className="sign-in-button">Sign In</button> */}
+          </button>
         </form>
       </section>
     </main>
