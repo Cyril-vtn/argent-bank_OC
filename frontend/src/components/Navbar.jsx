@@ -1,4 +1,4 @@
-import argentBankLogo from "../images/argentBankLogo.png"; // Importez l'image du logo
+import argentBankLogo from "../images/argentBankLogo.png";
 import { Link } from "react-router-dom";
 
 export const Navbar = () => {
