@@ -39,7 +39,9 @@ export const Profile = () => {
         <h1>
           Welcome back
           <br />
-          Tony Jarvis!
+          {user.userInfo
+            ? user.userInfo.firstName + " " + user.userInfo.lastName
+            : ""}
         </h1>
         <button className="edit-button">Edit Name</button>
       </div>
