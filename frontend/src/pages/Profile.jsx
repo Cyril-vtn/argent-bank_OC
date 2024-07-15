@@ -97,15 +97,23 @@ export const Profile = () => {
           <h1>
             Welcome back
             <br />
+            <label className="input-label" htmlFor="firstName">
+              First Name:
+            </label>
             <input
               className="edit-input"
+              id="firstName"
               name="firstName"
               value={editName.firstName}
               onChange={handleChange}
             />
             <br />
+            <label className="input-label" htmlFor="lastName">
+              Last Name:
+            </label>
             <input
               className="edit-input"
+              id="lastName"
               name="lastName"
               value={editName.lastName}
               onChange={handleChange}
