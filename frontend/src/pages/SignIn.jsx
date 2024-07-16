@@ -4,49 +4,40 @@ import { faUserCircle } from "@fortawesome/free-solid-svg-icons";
 import { useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { setUser } from "../features/user/userSlice";
+import { loginUser } from "../services/api.service";
 
 export const SignIn = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
   const handleSubmit = async (e) => {
+    e.preventDefault();
     const form = e.target;
 
     if (form.username.value === "" || form.password.value === "") {
       alert("Please fill in all fields");
       return;
     }
+
     const formData = {
       email: form.username.value,
       password: form.password.value,
     };
-    e.preventDefault();
-    await fetch("http://localhost:3001/api/v1/user/login", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(formData),
-    })
-      .then((response) => {
-        if (response.ok) {
-          return response.json();
-        }
-        throw new Error("Network response was not ok.");
-      })
-      .then((data) => {
-        dispatch(
-          setUser({
-            userInfo: null,
-            token: data.body.token,
-          })
-        );
-        navigate("/profile");
-      })
-      .catch((error) => {
-        console.error("There was a problem with your fetch operation:", error);
-      });
+
+    try {
+      const data = await loginUser(formData);
+      dispatch(
+        setUser({
+          userInfo: null,
+          token: data.body.token,
+        })
+      );
+      navigate("/profile");
+    } catch (error) {
+      console.error("Error during login:", error);
+    }
   };
+
   return (
     <main className="main bg-dark">
       <section className="sign-in-content">

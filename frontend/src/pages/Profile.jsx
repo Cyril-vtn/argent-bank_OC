@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import "../styles/profile.css";
 import { useDispatch, useSelector } from "react-redux";
 import { setUser } from "../features/user/userSlice";
+import { fetchUserProfile, updateUserProfile } from "../services/api.service";
 
 export const Profile = () => {
   const user = useSelector((state) => state.user);
@@ -26,16 +27,7 @@ export const Profile = () => {
       return;
     }
 
-    fetch("http://localhost:3001/api/v1/user/profile", {
-      method: "POST",
-      headers: { Authorization: `Bearer ${user.token}` },
-    })
-      .then((response) => {
-        if (response.ok) {
-          return response.json();
-        }
-        throw new Error("Network response was not ok.");
-      })
+    fetchUserProfile(user.token)
       .then((data) => {
         dispatch(
           setUser({
@@ -49,35 +41,16 @@ export const Profile = () => {
       });
   }, [user.token, dispatch]);
 
-  const handleEdit = () => {
-    setIsEditing(true);
-  };
-
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setEditName((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
-  };
-
   const handleConfirmEdit = () => {
     if (!editName.firstName || !editName.lastName) {
       alert("Please fill in both fields");
       return;
     }
-    fetch("http://localhost:3001/api/v1/user/profile", {
-      method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${user.token}`,
-      },
-      body: JSON.stringify({
-        firstName: editName.firstName,
-        lastName: editName.lastName,
-      }),
+
+    updateUserProfile(user.token, {
+      firstName: editName.firstName,
+      lastName: editName.lastName,
     })
-      .then((response) => response.json())
       .then((data) => {
         dispatch(
           setUser({
@@ -88,6 +61,18 @@ export const Profile = () => {
         setIsEditing(false);
       })
       .catch((error) => console.error("Error:", error));
+  };
+
+  const handleEdit = () => {
+    setIsEditing(true);
+  };
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setEditName((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
   };
 
   return (
