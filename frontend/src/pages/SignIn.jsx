@@ -5,10 +5,12 @@ import { useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { setUser } from "../features/user/userSlice";
 import { loginUser } from "../services/api.service";
+import { useState } from "react";
 
 export const SignIn = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
+  const [errorMessage, setErrorMessage] = useState("");
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -34,7 +36,7 @@ export const SignIn = () => {
       );
       navigate("/profile");
     } catch (error) {
-      console.error("Error during login:", error);
+      setErrorMessage(error.message);
     }
   };
 
@@ -43,6 +45,7 @@ export const SignIn = () => {
       <section className="sign-in-content">
         <FontAwesomeIcon icon={faUserCircle} className="sign-in-icon" />
         <h1>Sign In</h1>
+        {errorMessage && <p className="error-message">{errorMessage}</p>}
         <form onSubmit={handleSubmit}>
           <div className="input-wrapper">
             <label htmlFor="username">Username</label>

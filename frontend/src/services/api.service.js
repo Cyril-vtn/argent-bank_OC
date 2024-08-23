@@ -11,6 +11,10 @@ export const loginUser = async (formData) => {
       body: JSON.stringify(formData),
     });
 
+    if (response.status === 400) {
+      throw new Error("Invalid username or password. Please try again.");
+    }
+
     if (!response.ok) {
       throw new Error("Network response was not ok.");
     }
