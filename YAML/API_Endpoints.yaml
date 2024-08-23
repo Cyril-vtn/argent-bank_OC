@@ -1,0 +1,173 @@
+swagger: "2.0"
+info:
+  version: "1.0.0"
+  title: Transaction API
+  description: API pour gérer les transactions des utilisateurs
+schemes:
+  - https
+securityDefinitions:
+  Bearer:
+    type: apiKey
+    name: Authorization
+    in: header
+    description: "Saisissez 'Bearer' suivi d'un espace puis du token JWT. Exemple : 'Bearer abcde12345'"
+security:
+  - Bearer: []
+paths:
+  /account/{accountId}/transactions:
+    get:
+      summary: Récupérer toutes les transactions d'un utilisateur
+      description: Récupère toutes les transactions pour un utilisateur spécifique.
+      parameters:
+        - in: path
+          name: accountId
+          type: string
+          required: true
+          description: L'ID de l'utilisateur
+        - in: query
+          name: month
+          type: string
+          required: false
+          description: Le mois pour lequel récupérer les transactions (format YYYY-MM)
+      responses:
+        '200':
+          description: Liste des transactions de l'utilisateur
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/Transaction'
+        '400':
+          description: Requête invalide
+        '500':
+          description: Erreur interne du serveur
+
+  /account/{accountId}/transactions/{transactionId}:
+    get:
+      summary: Récupérer les détails d'une transaction spécifique
+      description: Récupère les détails d'une transaction pour un utilisateur.
+      parameters:
+        - in: path
+          name: accountId
+          required: true
+          type: string
+          description: ID du compte de l'utilisateur
+        - in: path
+          name: transactionId
+          required: true
+          type: string
+          description: ID de la transaction
+      responses:
+        '200':
+          description: Détails de la transaction
+          schema:
+            $ref: '#/definitions/Transaction'
+        '404':
+          description: Transaction non trouvée
+        '500':
+          description: Erreur interne du serveur
+    patch:
+      summary: Mettre à jour la note et la catégorie d'une transaction
+      description: Met à jour uniquement la note et la catégorie d'une transaction.
+      parameters:
+        - in: path
+          name: accountId
+          required: true
+          type: string
+          description: ID du compte de l'utilisateur
+        - in: path
+          name: transactionId
+          required: true
+          type: string
+          description: ID de la transaction
+        - in: body
+          name: body
+          required: true
+          schema:
+            type: object
+            properties:
+              category:
+                type: string
+                description: Nouvelle catégorie de la transaction
+              note:
+                type: string
+                description: Nouvelle note de la transaction
+      responses:
+        '200':
+          description: Transaction mise à jour avec succès
+          schema:
+            $ref: '#/definitions/Transaction'
+        '404':
+          description: Transaction non trouvée
+        '400':
+          description: Requête invalide
+        '500':
+          description: Erreur interne du serveur
+
+  /account/{accountId}/transaction:
+    post:
+      summary: Ajouter une nouvelle transaction
+      description: Ajoute une nouvelle transaction à la liste des transactions de l'utilisateur.
+      parameters:
+        - in: path
+          name: accountId
+          required: true
+          type: string
+        - in: body
+          name: body
+          description: Nouvelle transaction à ajouter
+          required: true
+          schema:
+            $ref: '#/definitions/NewTransaction'
+      responses:
+        '201':
+          description: Transaction créée avec succès
+          schema:
+            $ref: '#/definitions/Transaction'
+        '400':
+          description: Requête invalide
+        '500':
+          description: Erreur interne du serveur
+definitions:
+  NewTransaction:
+    type: object
+    properties:
+      date:
+        type: string
+        format: date
+        description: Date de la transaction
+      amount:
+        type: number
+        description: Montant de la transaction
+      description:
+        type: string
+        description: Description de la transaction
+      category:
+        type: string
+        description: Catégorie de la transaction (optionnelle)
+      notes:
+        type: string
+        description: Note de la transaction (optionnelle)
+        
+  Transaction:
+    type: object
+    properties:
+      id:
+        type: string
+        format: uuid
+        description: ID de la transaction
+      date:
+        type: string
+        format: date
+        description: Date de la transaction
+      amount:
+        type: number
+        description: Montant de la transaction
+      description:
+        type: string
+        description: Description de la transaction
+      category:
+        type: string
+        description: Catégorie de la transaction
+      notes:
+        type: string
+        description: Note de la transaction
